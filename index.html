@@ -1,0 +1,950 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101a19">
+  <meta name="description" content="Driftwave makes space for deep work with generative soundscapes that gently evolve as you focus.">
+  <title>Driftwave — Find your flow</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f3f1e8;
+      --muted: #a7b3ad;
+      --deep: #101a19;
+      --panel: #182522;
+      --line: rgba(233, 241, 233, .12);
+      --lime: #c8f17b;
+      --mint: #83cbb0;
+      --serif: Georgia, "Times New Roman", serif;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--deep);
+      color: var(--ink);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+    .wrap { width: min(1120px, calc(100% - 48px)); margin-inline: auto; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--lime);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 18px; height: 1px; background: currentColor; }
+
+    header {
+      position: absolute;
+      z-index: 5;
+      inset: 0 0 auto;
+      padding: 27px 0;
+    }
+    .nav { display: flex; align-items: center; justify-content: space-between; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 650; letter-spacing: -.04em; }
+    .brand-mark { width: 27px; height: 27px; }
+    .nav-links { display: flex; align-items: center; gap: 34px; color: #c3ccc5; font-size: 13px; }
+    .nav-links a { transition: color .2s ease; }
+    .nav-links a:hover, footer a:hover { color: var(--lime); }
+    .nav-cta { padding: 11px 17px; border: 1px solid rgba(200, 241, 123, .48); border-radius: 999px; color: var(--lime); font-size: 12px; }
+
+    .hero {
+      min-height: 750px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      padding: 136px 0 90px;
+      background:
+        radial-gradient(ellipse at 74% 48%, rgba(52, 113, 90, .22), transparent 34%),
+        radial-gradient(ellipse at 91% 76%, rgba(70, 118, 101, .12), transparent 24%),
+        #101a19;
+    }
+    .hero::after {
+      position: absolute;
+      inset: auto 0 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(200, 241, 123, .28), transparent);
+      content: "";
+    }
+    .hero-grid { display: grid; grid-template-columns: 1.02fr .98fr; align-items: center; gap: 38px; position: relative; z-index: 1; }
+    .hero-copy { max-width: 555px; }
+    h1 {
+      margin: 25px 0 22px;
+      max-width: 600px;
+      font-family: var(--serif);
+      font-size: clamp(56px, 6.7vw, 88px);
+      font-weight: 400;
+      letter-spacing: -.065em;
+      line-height: .99;
+    }
+    h1 em { color: var(--lime); font-weight: 400; }
+    .hero-copy > p { max-width: 440px; margin: 0; color: #b6c0b9; font-size: 16px; line-height: 1.8; }
+    .hero-actions { display: flex; align-items: center; gap: 23px; margin-top: 34px; }
+    .button {
+      min-height: 50px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 11px;
+      padding: 0 21px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--lime);
+      color: #142019;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .2s ease, background .2s ease;
+    }
+    .button:hover { transform: translateY(-2px); background: #d7fa9a; }
+    .button svg { width: 14px; height: 14px; }
+    .text-link { color: #c1ccc4; font-size: 13px; }
+    .text-link span { color: var(--lime); margin-left: 5px; }
+    .proof { display: flex; align-items: center; gap: 12px; margin-top: 48px; color: #87958d; font-size: 11px; }
+    .avatars { display: flex; padding-left: 6px; }
+    .avatar { width: 24px; height: 24px; margin-left: -6px; border: 2px solid #101a19; border-radius: 50%; background: linear-gradient(140deg, #d0a68d, #6b8d73); }
+    .avatar:nth-child(2) { background: linear-gradient(140deg, #e1bc91, #a86e59); }
+    .avatar:nth-child(3) { background: linear-gradient(140deg, #b5c5a3, #637f84); }
+    .avatar:nth-child(4) { background: linear-gradient(140deg, #d1a493, #625e7b); }
+    .stars { color: var(--lime); letter-spacing: 2px; font-size: 11px; }
+
+    .sound-art {
+      position: relative;
+      min-height: 460px;
+      display: grid;
+      place-items: center;
+      isolation: isolate;
+    }
+    .orb {
+      position: absolute;
+      width: min(390px, 80vw);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 37% 30%, rgba(213, 248, 179, .9) 0%, rgba(157, 215, 164, .75) 7%, rgba(89, 158, 133, .78) 22%, rgba(36, 87, 76, .9) 43%, rgba(20, 45, 41, .96) 63%, rgba(13, 27, 26, 1) 72%);
+      box-shadow: inset -30px -25px 75px rgba(2, 14, 14, .78), 0 0 100px rgba(67, 151, 119, .15);
+      z-index: -1;
+    }
+    .orb::before, .orb::after {
+      position: absolute;
+      inset: -35px;
+      border: 1px solid rgba(181, 232, 183, .18);
+      border-radius: 50%;
+      content: "";
+      transform: rotate(-24deg) scaleY(.42);
+    }
+    .orb::after { inset: -60px; border-color: rgba(181, 232, 183, .1); transform: rotate(27deg) scaleY(.4); }
+    .orbit {
+      position: absolute;
+      width: min(500px, 95vw);
+      aspect-ratio: 1;
+      border: 1px solid rgba(184, 231, 183, .1);
+      border-radius: 50%;
+      transform: scaleY(.42) rotate(-23deg);
+    }
+    .orbit::after { content: ""; position: absolute; width: 7px; height: 7px; border-radius: 50%; background: var(--lime); top: 17%; left: 17%; box-shadow: 0 0 15px var(--lime); }
+    .flow-canvas { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+    .player {
+      position: absolute;
+      right: -3px;
+      bottom: 17px;
+      z-index: 1;
+      width: 248px;
+      padding: 17px;
+      border: 1px solid rgba(226, 242, 226, .13);
+      border-radius: 15px;
+      background: rgba(22, 37, 33, .85);
+      box-shadow: 0 18px 55px rgba(0, 0, 0, .28);
+      backdrop-filter: blur(18px);
+    }
+    .player-top { display: flex; align-items: center; justify-content: space-between; color: #9caaa2; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+    .live-dot { display: inline-flex; align-items: center; gap: 6px; color: var(--lime); }
+    .live-dot::before { width: 5px; height: 5px; border-radius: 50%; background: currentColor; content: ""; }
+    .track-name { margin-top: 13px; font-family: var(--serif); font-size: 21px; }
+    .track-sub { margin-top: 4px; color: #85938b; font-size: 11px; }
+    .player-controls { display: flex; align-items: center; gap: 12px; margin-top: 15px; }
+    .play-button { display: grid; place-items: center; width: 34px; height: 34px; border: 0; border-radius: 50%; background: var(--lime); color: #142019; cursor: pointer; }
+    .play-button svg { width: 13px; height: 13px; }
+    .waveform { height: 27px; display: flex; flex: 1; align-items: center; justify-content: space-between; gap: 2px; }
+    .waveform i { width: 2px; height: var(--h); border-radius: 2px; background: #87c6a9; opacity: .7; transform-origin: center; }
+    .is-playing .waveform i { animation: soundbar .75s ease-in-out infinite alternate; animation-delay: calc(var(--i) * -65ms); }
+    .timer { color: #8e9c94; font-variant-numeric: tabular-nums; font-size: 10px; }
+    @keyframes soundbar { to { transform: scaleY(.38); opacity: .42; } }
+
+    .journey {
+      position: relative;
+      overflow-x: clip;
+      background:
+        radial-gradient(ellipse at 82% 50%, rgba(65, 122, 95, .15), transparent 36%),
+        #101a19;
+    }
+    .journey-grid {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      grid-template-areas: "copy visual";
+      align-items: start;
+      gap: 60px;
+    }
+    .journey-copy { grid-area: copy; }
+    .journey-copy .section-heading { margin-bottom: 30px; }
+    .journey-beats { display: grid; }
+    .journey-beat { min-height: 180px; padding: 21px 0 22px; border-top: 1px solid var(--line); }
+    .journey-beat span { color: var(--lime); font-size: 10px; font-weight: 700; letter-spacing: .14em; }
+    .journey-beat h3 { margin: 14px 0 8px; font-family: var(--serif); font-size: 23px; font-weight: 400; }
+    .journey-beat p { max-width: 330px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.75; }
+    .journey-visual {
+      position: sticky;
+      top: 13vh;
+      grid-area: visual;
+      display: grid;
+      place-items: center;
+      min-height: 490px;
+      height: 72vh;
+      max-height: 650px;
+      perspective: 1100px;
+    }
+    .journey-stage {
+      position: relative;
+      width: min(100%, 520px);
+      height: min(100%, 560px);
+      display: grid;
+      place-items: center;
+      isolation: isolate;
+    }
+    .journey-halo {
+      position: absolute;
+      width: min(410px, 80vw);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(91, 158, 121, .18), rgba(91, 158, 121, .04) 48%, transparent 72%);
+      filter: blur(7px);
+    }
+    .journey-scene {
+      position: relative;
+      width: min(390px, 78vw);
+      aspect-ratio: 1;
+      transform: rotateX(8deg) rotateY(var(--journey-rotation, -8deg)) translateZ(var(--journey-depth, 0px));
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    .journey-core {
+      position: absolute;
+      inset: 24%;
+      border: 1px solid rgba(202, 241, 183, .44);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 35% 31%, rgba(213, 248, 179, .88), rgba(135, 203, 160, .78) 12%, rgba(52, 112, 90, .92) 43%, rgba(20, 48, 41, .98) 72%);
+      box-shadow: inset -22px -24px 44px rgba(2, 13, 13, .72), 0 0 68px rgba(111, 190, 143, .18);
+      transform: translateZ(35px);
+      backface-visibility: hidden;
+    }
+    .journey-core::before, .journey-core::after {
+      position: absolute;
+      inset: 18%;
+      border: 1px solid rgba(215, 246, 202, .32);
+      border-radius: 50%;
+      content: "";
+      transform: rotateX(65deg) translateZ(16px);
+    }
+    .journey-core::after { inset: -18%; border-color: rgba(215, 246, 202, .13); transform: rotateY(61deg) translateZ(-5px); }
+    .journey-ring {
+      position: absolute;
+      inset: 11%;
+      border: 1px solid rgba(178, 224, 184, .36);
+      border-radius: 50%;
+      transform: rotateX(71deg) rotateZ(-23deg) translateZ(10px);
+      transform-style: preserve-3d;
+      backface-visibility: hidden;
+    }
+    .journey-ring.ring-two { inset: 3%; border-color: rgba(178, 224, 184, .18); transform: rotateX(69deg) rotateZ(31deg) translateZ(-28px); }
+    .journey-ring.ring-three { inset: 19%; border-color: rgba(200, 241, 123, .24); transform: rotateY(67deg) rotateZ(18deg) translateZ(52px); }
+    .journey-ring::after {
+      position: absolute;
+      top: 9%;
+      left: 14%;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--lime);
+      box-shadow: 0 0 15px rgba(200, 241, 123, .8);
+      content: "";
+    }
+    .journey-floor {
+      position: absolute;
+      left: 13%;
+      right: 13%;
+      bottom: 12%;
+      height: 22%;
+      border: 1px solid rgba(151, 205, 169, .14);
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(95, 159, 120, .12), transparent 70%);
+      transform: rotateX(76deg) translateZ(-75px);
+    }
+    main > section.is-offscreen .is-playing .waveform i,
+    main > section.is-offscreen .flow-canvas {
+      animation-play-state: paused !important;
+    }
+
+    section { padding: 112px 0; }
+    .section-heading { max-width: 610px; margin-bottom: 48px; }
+    .section-heading h2 { margin: 17px 0 13px; font-family: var(--serif); font-size: clamp(38px, 4vw, 53px); font-weight: 400; letter-spacing: -.045em; line-height: 1.08; }
+    .section-heading p { max-width: 470px; margin: 0; color: var(--muted); font-size: 14px; line-height: 1.8; }
+
+    .scapes { background: #f1f0e7; color: #18211c; }
+    .scapes .eyebrow { color: #66884c; }
+    .scapes .section-heading p { color: #68746d; }
+    .scapes-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .scape-card { position: relative; min-height: 310px; display: flex; flex-direction: column; justify-content: flex-end; overflow: hidden; padding: 25px; border-radius: 12px; background: #253d38; color: white; isolation: isolate; }
+    .scape-card::before { position: absolute; z-index: -1; inset: 0; content: ""; transition: transform .65s ease; }
+    .scape-card:hover::before { transform: scale(1.06); }
+    .scape-card.rain::before { background: linear-gradient(0deg, rgba(10, 28, 31, .88), transparent 70%), radial-gradient(ellipse at 30% 5%, rgba(196, 224, 214, .42), transparent 28%), linear-gradient(135deg, #819a92, #355a59 55%, #1d383d); }
+    .scape-card.forest::before { background: linear-gradient(0deg, rgba(9, 27, 19, .9), transparent 72%), radial-gradient(ellipse at 75% 30%, rgba(199, 222, 124, .4), transparent 25%), linear-gradient(130deg, #748a56, #31523b 57%, #18382f); }
+    .scape-card.space::before { background: linear-gradient(0deg, rgba(16, 16, 40, .9), transparent 72%), radial-gradient(ellipse at 68% 32%, rgba(187, 157, 235, .62), transparent 25%), linear-gradient(135deg, #6d6c9c, #3b3e73 55%, #222644); }
+    .scape-art { position: absolute; top: 26px; right: 27px; width: 87px; height: 87px; border: 1px solid rgba(255,255,255,.35); border-radius: 50%; opacity: .8; }
+    .scape-art::before, .scape-art::after { position: absolute; inset: 11px -15px; border: 1px solid rgba(255,255,255,.32); border-radius: 50%; content: ""; transform: rotate(-32deg) scaleY(.45); }
+    .scape-art::after { inset: -8px; border-color: rgba(255,255,255,.2); transform: rotate(40deg) scaleY(.5); }
+    .scape-icon { display: grid; place-items: center; width: 40px; height: 40px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,.32); border-radius: 50%; color: #e2f2c4; }
+    .scape-icon svg { width: 18px; height: 18px; }
+    .scape-card h3 { margin: 0 0 7px; font-family: var(--serif); font-size: 28px; font-weight: 400; }
+    .scape-card p { max-width: 250px; margin: 0; color: rgba(255,255,255,.75); font-size: 12px; line-height: 1.7; }
+    .scape-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 21px; padding-top: 13px; border-top: 1px solid rgba(255,255,255,.2); color: rgba(255,255,255,.7); font-size: 10px; letter-spacing: .09em; text-transform: uppercase; }
+    .scape-meta span:last-child { color: #e5f5c5; }
+
+    .how { background: #101a19; }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+    .step { padding: 28px 25px 10px 0; border-top: 1px solid var(--line); }
+    .step-num { color: var(--lime); font-family: var(--serif); font-size: 16px; }
+    .step h3 { margin: 34px 0 12px; font-family: var(--serif); font-size: 25px; font-weight: 400; }
+    .step p { max-width: 280px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.8; }
+
+    .testimonials { background: #182522; }
+    .testimonials .section-heading { margin-inline: auto; text-align: center; }
+    .testimonials .section-heading p { margin-inline: auto; }
+    .testimonials .eyebrow { justify-content: center; }
+    .quotes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .quote { min-height: 235px; padding: 25px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255,255,255,.018); }
+    .quote .stars { font-size: 12px; }
+    .quote blockquote { margin: 21px 0 25px; color: #e8ebe4; font-family: var(--serif); font-size: 19px; line-height: 1.45; }
+    .quote-person { display: flex; align-items: center; gap: 10px; color: #98a69e; font-size: 11px; }
+    .person-pic { width: 31px; height: 31px; border-radius: 50%; background: linear-gradient(140deg, #d7bd93, #637e72); }
+    .quote:nth-child(2) .person-pic { background: linear-gradient(140deg, #d7a590, #826d86); }
+    .quote:nth-child(3) .person-pic { background: linear-gradient(140deg, #a9c1a6, #67749a); }
+    .quote-person strong { display: block; margin-bottom: 3px; color: #e4e9e1; font-weight: 550; }
+
+    .pricing { background: #f1f0e7; color: #18211c; }
+    .pricing .section-heading { margin-inline: auto; text-align: center; }
+    .pricing .section-heading p { margin-inline: auto; color: #68746d; }
+    .pricing .eyebrow { justify-content: center; }
+    .plans { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 17px; max-width: 800px; margin: 0 auto; }
+    .plan { padding: 29px; border: 1px solid #d6dbd0; border-radius: 12px; background: rgba(255,255,255,.44); }
+    .plan.pro { border-color: #244b3b; background: #1d352c; color: #f3f1e8; }
+    .plan-name { color: #6a796f; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .pro .plan-name { color: #b7d59e; }
+    .price { margin-top: 22px; font-family: var(--serif); font-size: 48px; letter-spacing: -.05em; }
+    .price small { color: #87938a; font-family: var(--sans); font-size: 12px; letter-spacing: 0; }
+    .plan-desc { min-height: 40px; margin: 8px 0 20px; color: #718077; font-size: 12px; line-height: 1.6; }
+    .pro .plan-desc { color: #a9b8ad; }
+    .plan hr { border: 0; border-top: 1px solid #d6dbd0; margin: 0 0 19px; }
+    .pro hr { border-color: rgba(255,255,255,.16); }
+    .features { display: grid; gap: 13px; margin: 0 0 26px; padding: 0; list-style: none; color: #59685f; font-size: 12px; }
+    .pro .features { color: #d1d9d0; }
+    .features li::before { content: "✓"; margin-right: 9px; color: #699050; font-weight: 700; }
+    .pro .features li::before { color: var(--lime); }
+    .plan .button { width: 100%; background: #dce5d2; }
+    .pro .button { background: var(--lime); }
+    .plan .button:hover { background: #e9f1e2; }
+    .pro .button:hover { background: #d7fa9a; }
+
+    footer { padding: 36px 0; background: #101a19; color: #88968e; }
+    .footer-row { display: flex; align-items: center; justify-content: space-between; gap: 26px; }
+    .footer-brand { color: var(--ink); }
+    .copyright { margin-top: 7px; font-size: 10px; }
+    .footer-links { display: flex; gap: 25px; font-size: 11px; }
+    .footer-note { color: #718078; font-size: 10px; }
+
+    @media (max-width: 800px) {
+      .hero { min-height: 0; padding: 132px 0 75px; }
+      .hero-grid { grid-template-columns: 1fr; gap: 18px; }
+      .hero-copy { max-width: 640px; }
+      .sound-art { min-height: 430px; }
+      .player { right: 4%; bottom: 4px; }
+      .journey-grid { grid-template-columns: .9fr 1.1fr; gap: 25px; }
+      .journey-visual { min-height: 430px; height: 56vh; }
+      .journey-scene { width: min(330px, 42vw); }
+      .journey-beat { min-height: 155px; }
+      .scapes-grid { gap: 12px; }
+      .scape-card { min-height: 280px; padding: 19px; }
+      .quotes { gap: 11px; }
+      .quote { padding: 20px; }
+      .quote blockquote { font-size: 17px; }
+    }
+    @media (max-width: 600px) {
+      .wrap { width: min(100% - 36px, 480px); }
+      header { padding: 20px 0; }
+      .nav-links { gap: 0; }
+      .nav-links a:not(.nav-cta) { display: none; }
+      .nav-cta { padding: 10px 14px; }
+      .hero { padding: 121px 0 62px; }
+      h1 { margin-top: 21px; font-size: clamp(53px, 15vw, 74px); }
+      .hero-copy > p { font-size: 14px; }
+      .hero-actions { gap: 17px; flex-wrap: wrap; }
+      .proof { margin-top: 33px; }
+      .sound-art { min-height: 360px; margin-top: 3px; }
+      .orb { width: min(290px, 76vw); }
+      .orb::before, .orb::after { inset: -12px; }
+      .orbit { width: min(300px, 78vw); transform: scaleY(.45) rotate(-12deg); }
+      .player { right: 0; bottom: -3px; width: 220px; padding: 14px; }
+      .journey-grid { grid-template-columns: 1fr; grid-template-areas: "copy" "visual"; gap: 12px; }
+      .journey-visual { position: relative; top: auto; height: 340px; min-height: 340px; margin-top: -6px; }
+      .journey-stage { height: 100%; }
+      .journey-scene { width: min(245px, 64vw); }
+      .journey-beat { min-height: 0; padding: 20px 0; }
+      section { padding: 77px 0; }
+      .section-heading { margin-bottom: 31px; }
+      .section-heading h2 { font-size: 41px; }
+      .scapes-grid, .quotes, .steps { grid-template-columns: 1fr; }
+      .scape-card { min-height: 255px; }
+      .steps { gap: 22px; }
+      .step { padding: 20px 0 0; }
+      .step h3 { margin: 19px 0 9px; }
+      .testimonials .section-heading { text-align: left; }
+      .testimonials .eyebrow { justify-content: flex-start; }
+      .testimonials .section-heading p { margin-left: 0; }
+      .quote { min-height: 0; }
+      .quote blockquote { margin: 16px 0 20px; }
+      .plans { grid-template-columns: 1fr; }
+      .footer-row { align-items: flex-start; flex-direction: column; }
+      .footer-links { flex-wrap: wrap; gap: 17px; }
+      .footer-note { margin-top: -12px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation: none !important;
+        transition: none !important;
+      }
+      .button:hover { transform: none; }
+      .scape-card:hover::before { transform: none; }
+      .journey-scene { transform: rotateX(7deg) !important; will-change: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="nav wrap" aria-label="Main navigation">
+      <a class="brand" href="#" aria-label="Driftwave home">
+        <svg class="brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+          <path d="M3 17.5c4.2 0 4.2-5 8.4-5s4.2 7 8.4 7 4.2-5 9.2-5" stroke="#C8F17B" stroke-width="2.2" stroke-linecap="round"/>
+          <path d="M3 23c4.2 0 4.2-3.1 8.4-3.1s4.2 4.2 8.4 4.2 4.2-3.1 9.2-3.1" stroke="#83CBB0" stroke-width="1.7" stroke-linecap="round" opacity=".8"/>
+        </svg>
+        driftwave
+      </a>
+      <div class="nav-links">
+        <a href="#soundscapes">Soundscapes</a>
+        <a href="#how">How it works</a>
+        <a href="#pricing">Pricing</a>
+        <a class="nav-cta" href="#pricing">Try Driftwave</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-grid wrap">
+        <div class="hero-copy">
+          <span class="eyebrow">A softer way to focus</span>
+          <h1 id="hero-title">Find your flow.<br><em>Lose the noise.</em></h1>
+          <p>Generative soundscapes that shift with you, creating just enough calm to get lost in the work that matters.</p>
+          <div class="hero-actions">
+            <a class="button" href="#soundscapes">Start focusing
+              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3 8h10M8 3l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a class="text-link" href="#how">See how it works <span>↗</span></a>
+          </div>
+          <div class="proof">
+            <div class="avatars" aria-hidden="true"><span class="avatar"></span><span class="avatar"></span><span class="avatar"></span><span class="avatar"></span></div>
+            <span><span class="stars">★★★★★</span><br>Made for minds that wander</span>
+          </div>
+        </div>
+        <div class="sound-art" aria-label="An evolving soundscape preview">
+          <div class="orbit"></div><div class="orb"></div>
+          <canvas class="flow-canvas" id="flow-canvas" data-seed="42" aria-hidden="true"></canvas>
+          <div class="player" id="player">
+            <div class="player-top"><span class="live-dot" id="player-status">Ready when you are</span><span>01 / 03</span></div>
+            <div class="track-name" id="track-name">Rain on the window</div>
+            <div class="track-sub">A little space to think</div>
+            <div class="player-controls">
+              <button class="play-button" id="play-button" type="button" aria-label="Play rain soundscape" aria-pressed="false">
+                <svg id="play-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5 3.4c0-.7.8-1.1 1.4-.7l6 4.5a1 1 0 0 1 0 1.6l-6 4.5c-.6.4-1.4 0-1.4-.7V3.4Z"/></svg>
+              </button>
+              <div class="waveform" aria-hidden="true"></div>
+              <span class="timer" id="timer">25:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="scapes" id="soundscapes" aria-labelledby="scapes-title">
+      <div class="wrap">
+        <div class="section-heading">
+          <span class="eyebrow">A world of your own</span>
+          <h2 id="scapes-title">Choose a place<br>to settle in.</h2>
+          <p>Not loops. Living sound, composed in the moment and shaped to keep your mind gently engaged.</p>
+        </div>
+        <div class="scapes-grid">
+          <article class="scape-card rain">
+            <div class="scape-art" aria-hidden="true"></div>
+            <div class="scape-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 16a4 4 0 1 1 .8-7.9A5.2 5.2 0 0 1 18 10a3 3 0 0 1-.3 6M9 18l-1 3m6-3-1 3m6-3-1 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+            <h3>Rain</h3>
+            <p>Soft rooftop patter, distant thunder, and the hush of a rainy afternoon.</p>
+            <div class="scape-meta"><span>Warm · Steady</span><span>Explore ↗</span></div>
+          </article>
+          <article class="scape-card forest">
+            <div class="scape-art" aria-hidden="true"></div>
+            <div class="scape-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m12 3 6 9h-4l4 6H6l4-6H6l6-9Zm0 15v4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h3>Forest</h3>
+            <p>Sunlit leaves, birdsong from afar, and a breeze through the canopy.</p>
+            <div class="scape-meta"><span>Bright · Organic</span><span>Explore ↗</span></div>
+          </article>
+          <article class="scape-card space">
+            <div class="scape-art" aria-hidden="true"></div>
+            <div class="scape-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v2m0 14v2M3 12h2m14 0h2M5.6 5.6 7 7m10 10 1.4 1.4m0-12.8L17 7M7 17l-1.4 1.4M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+            <h3>Deep Space</h3>
+            <p>Velvet-low tones, distant signals, and the quiet of the endless night.</p>
+            <div class="scape-meta"><span>Vast · Weightless</span><span>Explore ↗</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="journey" id="journey" aria-labelledby="journey-title">
+      <div class="wrap journey-grid">
+        <div class="journey-copy">
+          <div class="section-heading">
+            <span class="eyebrow">Stay with the current</span>
+            <h2 id="journey-title">Sound that drifts.<br>Focus that stays.</h2>
+            <p>A small journey through the way Driftwave works: steady enough to settle into, alive enough to keep the edges soft.</p>
+          </div>
+          <div class="journey-beats">
+            <article class="journey-beat">
+              <span>01 / ARRIVE</span>
+              <h3>A place to land</h3>
+              <p>Find a sound with the feeling you need, from rain-washed quiet to open sky.</p>
+            </article>
+            <article class="journey-beat">
+              <span>02 / SETTLE</span>
+              <h3>Room to go deeper</h3>
+              <p>Soft layers move at their own pace, giving your attention something gentle to follow.</p>
+            </article>
+            <article class="journey-beat">
+              <span>03 / RETURN</span>
+              <h3>Come back refreshed</h3>
+              <p>Your session ends with space to breathe, not another alarm demanding your attention.</p>
+            </article>
+          </div>
+        </div>
+        <div class="journey-visual" aria-hidden="true">
+          <div class="journey-stage">
+            <div class="journey-halo"></div>
+            <div class="journey-scene" id="journey-scene">
+              <div class="journey-floor"></div>
+              <div class="journey-ring ring-two"></div>
+              <div class="journey-ring ring-three"></div>
+              <div class="journey-core"></div>
+              <div class="journey-ring"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="how" id="how" aria-labelledby="how-title">
+      <div class="wrap">
+        <div class="section-heading">
+          <span class="eyebrow">A ritual, not a routine</span>
+          <h2 id="how-title">Three steps to<br>somewhere quieter.</h2>
+        </div>
+        <div class="steps">
+          <article class="step"><span class="step-num">01 / SETTLE IN</span><h3>Pick your place</h3><p>Choose the atmosphere that feels right for the work in front of you. There’s no wrong kind of quiet.</p></article>
+          <article class="step"><span class="step-num">02 / FIND A PACE</span><h3>Set your intention</h3><p>Choose a focus session and let the sound create a gentle boundary around your time.</p></article>
+          <article class="step"><span class="step-num">03 / LET GO</span><h3>Stay in the moment</h3><p>Your soundscape subtly evolves as you work. No sudden changes, no distractions—just flow.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="testimonials" aria-labelledby="quotes-title">
+      <div class="wrap">
+        <div class="section-heading">
+          <span class="eyebrow">A little less scattered</span>
+          <h2 id="quotes-title">Quietly changing<br>the way we work.</h2>
+          <p>For the deep thinkers, the tab-jugglers, and everyone looking for a softer landing.</p>
+        </div>
+        <div class="quotes">
+          <article class="quote"><div class="stars" aria-label="5 out of 5 stars">★★★★★</div><blockquote>“It’s the first thing that’s made my workday feel like it has a beginning, middle, and end.”</blockquote><div class="quote-person"><span class="person-pic" aria-hidden="true"></span><span><strong>Alex M.</strong>Product designer</span></div></article>
+          <article class="quote"><div class="stars" aria-label="5 out of 5 stars">★★★★★</div><blockquote>“The sound changes just enough that I stop noticing it—and somehow stop noticing everything else, too.”</blockquote><div class="quote-person"><span class="person-pic" aria-hidden="true"></span><span><strong>Samira K.</strong>Writer & editor</span></div></article>
+          <article class="quote"><div class="stars" aria-label="5 out of 5 stars">★★★★★</div><blockquote>“Deep Space is my new ‘do not disturb’ sign. My best ideas happen somewhere in there.”</blockquote><div class="quote-person"><span class="person-pic" aria-hidden="true"></span><span><strong>Jordan T.</strong>Software engineer</span></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="pricing" id="pricing" aria-labelledby="pricing-title">
+      <div class="wrap">
+        <div class="section-heading">
+          <span class="eyebrow">Make room for focus</span>
+          <h2 id="pricing-title">A little calm goes<br>a long way.</h2>
+          <p>Start for free. Upgrade whenever you’re ready for a deeper drift.</p>
+        </div>
+        <div class="plans">
+          <article class="plan">
+            <div class="plan-name">Free</div>
+            <div class="price">$0 <small>/ forever</small></div>
+            <p class="plan-desc">A simple place to begin finding your focus.</p>
+            <hr>
+            <ul class="features"><li>3 evolving soundscapes</li><li>25-minute focus sessions</li><li>Gentle session reminders</li></ul>
+            <a class="button" href="#soundscapes">Start for free</a>
+          </article>
+          <article class="plan pro">
+            <div class="plan-name">Driftwave Pro</div>
+            <div class="price">$6 <small>/ month</small></div>
+            <p class="plan-desc">Your own quiet corner, whenever you need it.</p>
+            <hr>
+            <ul class="features"><li>Every soundscape, no limits</li><li>Custom session lengths</li><li>Save your favorite mixes</li><li>Offline listening</li></ul>
+            <a class="button" href="mailto:hello@driftwave.app?subject=Driftwave%20Pro">Get Driftwave Pro</a>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-row">
+      <div>
+        <a class="brand footer-brand" href="#">
+          <svg class="brand-mark" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M3 17.5c4.2 0 4.2-5 8.4-5s4.2 7 8.4 7 4.2-5 9.2-5" stroke="#C8F17B" stroke-width="2.2" stroke-linecap="round"/><path d="M3 23c4.2 0 4.2-3.1 8.4-3.1s4.2 4.2 8.4 4.2 4.2-3.1 9.2-3.1" stroke="#83CBB0" stroke-width="1.7" stroke-linecap="round" opacity=".8"/></svg>
+          driftwave
+        </a>
+        <div class="copyright">© 2025 Driftwave. Made for the in-between.</div>
+      </div>
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="#soundscapes">Soundscapes</a><a href="#pricing">Pricing</a><a href="mailto:hello@driftwave.app">Contact</a><a href="mailto:hello@driftwave.app?subject=Privacy">Privacy</a>
+      </nav>
+      <span class="footer-note">Breathe in. Begin again.</span>
+    </div>
+  </footer>
+
+  <script>
+    const flowCanvas = document.querySelector("#flow-canvas");
+    const flowHost = document.querySelector(".sound-art");
+    const flowContext = flowCanvas.getContext("2d", { alpha: true });
+    const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const seed = Number(flowCanvas.dataset.seed);
+
+    function seededRandom(initialSeed) {
+      let state = initialSeed >>> 0;
+      return () => {
+        state += 0x6d2b79f5;
+        let value = state;
+        value = Math.imul(value ^ value >>> 15, value | 1);
+        value ^= value + Math.imul(value ^ value >>> 7, value | 61);
+        return ((value ^ value >>> 14) >>> 0) / 4294967296;
+      };
+    }
+
+    const random = seededRandom(seed);
+    const lineDetails = Array.from({ length: 26 }, () => ({
+      phase: random() * Math.PI * 2,
+      drift: .6 + random() * .8
+    }));
+    const particles = Array.from({ length: 30 }, () => ({
+      latitude: random() * 1.65 - .825,
+      longitude: random() * Math.PI * 2,
+      size: .45 + random() * 1.25
+    }));
+    let flowVisible = false;
+    let flowFrame = 0;
+    let flowLast = 0;
+    let flowTime = 0;
+    let flowDpr = 1;
+    let flowWidth = 0;
+    let flowHeight = 0;
+    let flowLineCount = 24;
+    let flowSegments = 64;
+
+    function drawFlow(time) {
+      if (!flowContext || !flowWidth || !flowHeight) return;
+      flowContext.setTransform(flowDpr, 0, 0, flowDpr, 0, 0);
+      flowContext.clearRect(0, 0, flowWidth, flowHeight);
+
+      const centerX = flowWidth * .5;
+      const centerY = flowHeight * .48;
+      const radius = Math.min(flowWidth * .39, flowHeight * .42);
+      const rotation = time * .00006;
+      const sphereGlow = flowContext.createRadialGradient(
+        centerX - radius * .3, centerY - radius * .36, 1, centerX, centerY, radius
+      );
+      sphereGlow.addColorStop(0, "rgba(204, 241, 181, .12)");
+      sphereGlow.addColorStop(.52, "rgba(109, 188, 148, .06)");
+      sphereGlow.addColorStop(1, "rgba(49, 110, 91, 0)");
+      flowContext.fillStyle = sphereGlow;
+      flowContext.beginPath();
+      flowContext.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      flowContext.fill();
+
+      flowContext.save();
+      flowContext.beginPath();
+      flowContext.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      flowContext.clip();
+
+      for (let line = 0; line < flowLineCount; line++) {
+        const detail = lineDetails[line];
+        const latitude = (line / (flowLineCount - 1) - .5) * 1.76;
+        let previousFront = null;
+        flowContext.beginPath();
+        for (let sample = 0; sample <= flowSegments; sample++) {
+          const angle = sample / flowSegments * Math.PI * 2 + rotation * detail.drift + detail.phase;
+          const depth = Math.cos(latitude) * Math.cos(angle);
+          const front = depth >= 0;
+          const waviness = Math.sin(angle * 2 + detail.phase + time * .00008) * radius * .009 * Math.cos(latitude);
+          const x = centerX + radius * Math.cos(latitude) * Math.sin(angle);
+          const y = centerY + radius * Math.sin(latitude) * .82 + waviness;
+
+          if (front !== previousFront) {
+            if (previousFront !== null) flowContext.stroke();
+            flowContext.beginPath();
+            flowContext.moveTo(x, y);
+          } else {
+            flowContext.lineTo(x, y);
+          }
+          previousFront = front;
+          flowContext.strokeStyle = front
+            ? "rgba(204, 241, 181, .34)"
+            : "rgba(160, 220, 183, .095)";
+          flowContext.lineWidth = front ? .9 : .65;
+        }
+        flowContext.stroke();
+      }
+
+      for (const particle of particles) {
+        const angle = particle.longitude + rotation;
+        const depth = Math.cos(particle.latitude) * Math.cos(angle);
+        if (depth < .08) continue;
+        const x = centerX + radius * Math.cos(particle.latitude) * Math.sin(angle);
+        const y = centerY + radius * Math.sin(particle.latitude) * .82;
+        flowContext.globalAlpha = .25 + depth * .65;
+        flowContext.fillStyle = "#d9f6c3";
+        flowContext.beginPath();
+        flowContext.arc(x, y, particle.size, 0, Math.PI * 2);
+        flowContext.fill();
+      }
+      flowContext.globalAlpha = 1;
+      flowContext.restore();
+      flowCanvas.dataset.lineCount = String(flowLineCount);
+    }
+
+    function updateFlowQuality() {
+      const width = flowHost.getBoundingClientRect().width;
+      const height = flowHost.getBoundingClientRect().height;
+      if (!width || !height) return;
+      flowWidth = width;
+      flowHeight = height;
+      const viewportWidth = window.innerWidth;
+      flowDpr = Math.min(window.devicePixelRatio || 1, viewportWidth <= 600 ? 1.25 : 1.5);
+      flowLineCount = viewportWidth <= 600 ? 10 : viewportWidth <= 800 ? 16 : 24;
+      flowSegments = viewportWidth <= 600 ? 28 : viewportWidth <= 800 ? 42 : 64;
+      flowCanvas.width = Math.round(width * flowDpr);
+      flowCanvas.height = Math.round(height * flowDpr);
+      drawFlow(motionPreference.matches ? 0 : flowTime);
+    }
+
+    function updateFlowLoop() {
+      if (flowFrame) window.cancelAnimationFrame(flowFrame);
+      flowFrame = 0;
+      if (flowVisible && !motionPreference.matches && !document.hidden) {
+        flowLast = 0;
+        flowCanvas.dataset.animationActive = "true";
+        flowFrame = window.requestAnimationFrame(renderFlow);
+      } else {
+        flowCanvas.dataset.animationActive = "false";
+        if (motionPreference.matches) drawFlow(0);
+      }
+    }
+
+    function renderFlow(timestamp) {
+      flowFrame = 0;
+      if (!flowVisible || motionPreference.matches || document.hidden) {
+        updateFlowLoop();
+        return;
+      }
+      const elapsed = flowLast ? Math.min(timestamp - flowLast, 50) : 0;
+      flowLast = timestamp;
+      flowTime += elapsed;
+      drawFlow(flowTime);
+      flowFrame = window.requestAnimationFrame(renderFlow);
+    }
+
+    const journey = document.querySelector(".journey");
+    const journeyScene = document.querySelector("#journey-scene");
+    let journeyVisible = false;
+    let journeyFrame = 0;
+
+    function updateJourneyScene() {
+      journeyFrame = 0;
+      if (!journeyVisible || motionPreference.matches) return;
+      const bounds = journey.getBoundingClientRect();
+      const progress = Math.max(0, Math.min(1, (window.innerHeight - bounds.top) / (window.innerHeight + bounds.height)));
+      journeyScene.style.setProperty("--journey-rotation", `${-8 + progress * 16}deg`);
+      journeyScene.style.setProperty("--journey-depth", `${Math.sin(progress * Math.PI) * 18}px`);
+    }
+
+    function scheduleJourneyUpdate() {
+      if (motionPreference.matches) {
+        journeyScene.style.setProperty("--journey-rotation", "0deg");
+        journeyScene.style.setProperty("--journey-depth", "0px");
+        return;
+      }
+      if (journeyVisible && !journeyFrame) journeyFrame = window.requestAnimationFrame(updateJourneyScene);
+    }
+
+    const sectionObserver = new IntersectionObserver(entries => {
+      for (const entry of entries) {
+        if (entry.target === flowHost) {
+          flowVisible = entry.isIntersecting;
+          updateFlowLoop();
+        } else if (entry.target === journey) {
+          journeyVisible = entry.isIntersecting;
+          if (journeyVisible) scheduleJourneyUpdate();
+          else if (journeyFrame) {
+            window.cancelAnimationFrame(journeyFrame);
+            journeyFrame = 0;
+          }
+        } else {
+          entry.target.classList.toggle("is-offscreen", !entry.isIntersecting);
+        }
+      }
+    }, { threshold: .01 });
+
+    document.querySelectorAll("main > section").forEach(section => sectionObserver.observe(section));
+    sectionObserver.observe(flowHost);
+    if ("ResizeObserver" in window) {
+      new ResizeObserver(updateFlowQuality).observe(flowHost);
+    }
+    window.addEventListener("resize", updateFlowQuality, { passive: true });
+    window.addEventListener("scroll", scheduleJourneyUpdate, { passive: true });
+    window.addEventListener("resize", scheduleJourneyUpdate, { passive: true });
+    document.addEventListener("visibilitychange", updateFlowLoop);
+    motionPreference.addEventListener("change", () => {
+      if (motionPreference.matches) {
+        journeyScene.style.setProperty("--journey-rotation", "0deg");
+        journeyScene.style.setProperty("--journey-depth", "0px");
+      } else {
+        scheduleJourneyUpdate();
+      }
+      updateFlowLoop();
+    });
+
+    updateFlowQuality();
+
+    const waveform = document.querySelector(".waveform");
+    const player = document.querySelector("#player");
+    const playButton = document.querySelector("#play-button");
+    const playIcon = document.querySelector("#play-icon");
+    const playerStatus = document.querySelector("#player-status");
+    const timer = document.querySelector("#timer");
+    const barHeights = [8, 14, 18, 11, 22, 15, 25, 12, 19, 9, 23, 15, 20, 10, 17, 24, 12, 19, 8, 16, 22, 11, 18, 13];
+    barHeights.forEach((height, index) => {
+      const bar = document.createElement("i");
+      bar.style.setProperty("--h", `${height}px`);
+      bar.style.setProperty("--i", index);
+      waveform.append(bar);
+    });
+
+    let audioContext;
+    let soundNodes = [];
+    let isPlaying = false;
+    let seconds = 25 * 60;
+    let clock;
+
+    function formatTime(value) {
+      const minutes = Math.floor(value / 60).toString().padStart(2, "0");
+      const remainder = (value % 60).toString().padStart(2, "0");
+      return `${minutes}:${remainder}`;
+    }
+
+    function createRainSound(context) {
+      const buffer = context.createBuffer(1, context.sampleRate * 2, context.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * .16;
+      const noise = context.createBufferSource();
+      noise.buffer = buffer;
+      noise.loop = true;
+      const filter = context.createBiquadFilter();
+      filter.type = "lowpass";
+      filter.frequency.value = 1100;
+      const gain = context.createGain();
+      gain.gain.value = .12;
+      noise.connect(filter).connect(gain).connect(context.destination);
+      noise.start();
+      return [noise, filter, gain];
+    }
+
+    async function startSound() {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) {
+        playerStatus.textContent = "Audio isn't supported here";
+        return;
+      }
+      audioContext ??= new AudioContextClass();
+      if (audioContext.state === "suspended") await audioContext.resume();
+      soundNodes = createRainSound(audioContext);
+      isPlaying = true;
+      player.classList.add("is-playing");
+      playButton.setAttribute("aria-pressed", "true");
+      playButton.setAttribute("aria-label", "Pause rain soundscape");
+      playIcon.innerHTML = '<path d="M4.5 3.5h2.7v9H4.5zm4.3 0h2.7v9H8.8z"/>';
+      playerStatus.textContent = "Now drifting";
+      clock = window.setInterval(() => {
+        if (seconds > 0) seconds -= 1;
+        timer.textContent = formatTime(seconds);
+        if (seconds === 0) stopSound();
+      }, 1000);
+    }
+
+    function stopSound() {
+      soundNodes.forEach(node => {
+        try { node.stop?.(); } catch (error) {
+          if (error.name !== "InvalidStateError") throw error;
+        }
+        node.disconnect?.();
+      });
+      soundNodes = [];
+      window.clearInterval(clock);
+      isPlaying = false;
+      player.classList.remove("is-playing");
+      playButton.setAttribute("aria-pressed", "false");
+      playButton.setAttribute("aria-label", "Play rain soundscape");
+      playIcon.innerHTML = '<path d="M5 3.4c0-.7.8-1.1 1.4-.7l6 4.5a1 1 0 0 1 0 1.6l-6 4.5c-.6.4-1.4 0-1.4-.7V3.4Z"/>';
+      playerStatus.textContent = "Ready when you are";
+    }
+
+    playButton.addEventListener("click", async () => {
+      if (isPlaying) {
+        stopSound();
+        return;
+      }
+      await startSound();
+    });
+  </script>
+</body>
+</html>
